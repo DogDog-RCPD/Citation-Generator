@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traffic Citation Generator</title>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+      background: #f3f3f3;
+    }
+    .container {
+      width: 420px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      background: #007bff;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .citation {
+      width: 380px;
+      margin: 20px auto;
+      padding: 15px;
+      border: 2px solid #000;
+      background: #fff;
+      position: relative;
+      font-size: 14px;
+    }
+    .citation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #000;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+    }
+    .citation-header h3 {
+      margin: 0;
+      font-size: 18px;
+      text-transform: uppercase;
+    }
+    .logo {
+      width: 60px;
+    }
+    .field {
+      border: 1px solid #000;
+      padding: 6px;
+      margin-bottom: 8px;
+    }
+    .field strong {
+      display: inline-block;
+      width: 120px;
+    }
+    .footer {
+      border-top: 2px solid #000;
+      margin-top: 12px;
+      padding-top: 8px;
+      text-align: center;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Traffic Citation Generator</h2>
+    <label>Offender Name:</label>
+    <input type="text" id="offender" placeholder="John Doe">
+
+    <label>Officer Name:</label>
+    <input type="text" id="officer" placeholder="Officer Smith">
+
+    <label>License Plate:</label>
+    <input type="text" id="plate" placeholder="ABC-1234">
+
+    <label>Violation(s):</label>
+    <textarea id="violation" rows="3" placeholder="Speeding, Running a red light"></textarea>
+
+    <label>Fine Amount ($):</label>
+    <input type="number" id="fine" placeholder="500">
+
+    <button id="generateBtn">Generate Citation</button>
+    <button id="downloadBtn">Download PNG</button>
+
+    <div id="citation" class="citation" style="display:none">
+      <div class="citation-header">
+        <h3>Traffic Citation</h3>
+        <img src="RCPDUpdatedLogo.png" alt="Logo" class="logo">
+      </div>
+      <div class="field"><strong>Citation #:</strong> <span id="c_number"></span></div>
+      <div class="field"><strong>Offender:</strong> <span id="c_offender"></span></div>
+      <div class="field"><strong>Officer:</strong> <span id="c_officer"></span></div>
+      <div class="field"><strong>License Plate:</strong> <span id="c_plate"></span></div>
+      <div class="field"><strong>Violation(s):</strong> <span id="c_violation"></span></div>
+      <div class="field"><strong>Fine:</strong> $<span id="c_fine"></span></div>
+      <div class="field"><strong>Date:</strong> <span id="c_datetime"></span></div>
+      <div class="footer">Issued by River City Police Department</div>
+    </div>
+  </div>
+
+  <script>
+    window.onload = function () {
+      function generateCitation() {
+        const citationNumber = "RC-" + Math.floor(100000 + Math.random() * 900000);
+        const today = new Date();
+        const dateOnly = today.toISOString().split('T')[0];
+
+        document.getElementById("c_number").innerText = citationNumber;
+        document.getElementById("c_offender").innerText = document.getElementById("offender").value;
+        document.getElementById("c_officer").innerText = document.getElementById("officer").value;
+        document.getElementById("c_plate").innerText = document.getElementById("plate").value;
+        document.getElementById("c_violation").innerText = document.getElementById("violation").value;
+        document.getElementById("c_fine").innerText = document.getElementById("fine").value;
+        document.getElementById("c_datetime").innerText = dateOnly;
+
+        document.getElementById("citation").style.display = "block";
+      }
+
+      document.getElementById("generateBtn").onclick = generateCitation;
+
+      document.getElementById("downloadBtn").addEventListener("click", function () {
+        const citationElement = document.getElementById("citation");
+        if (citationElement.style.display === "none") {
+          alert("Please generate a citation first.");
+          return;
+        }
+        html2canvas(citationElement, { useCORS: true }).then(canvas => {
+          const link = document.createElement("a");
+          link.download = "citation.png";
+          link.href = canvas.toDataURL("image/png");
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        });
+      });
+    };
+  </script>
+</body>
+</html>
